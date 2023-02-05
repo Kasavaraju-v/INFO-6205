@@ -12,8 +12,7 @@ import edu.neu.coe.info6205.util.StatPack;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -137,6 +136,102 @@ public class InsertionSortTest {
         final int fixes = (int) statPack.getStatistics(InstrumentedHelper.FIXES).mean();
         System.out.println(statPack);
         assertEquals(inversions, fixes);
+    }
+
+    @Test
+    public void randomOrderedTest() throws Exception{
+        System.out.println("========================Random Ordered Array========================");
+        int[] values = {10, 20, 40, 80, 160};
+        for(int n: values) {
+            System.out.println("========================================================================");
+            System.out.println("Test for n = " + n);
+            Integer[] inputArray = generateRandomArray(n);
+            int runs = 10000;
+
+            double time = benchmarkRunTime(runs, n, inputArray);
+
+            System.out.println("Time taken: " + time + " Runs: " + runs);
+        }
+    }
+
+    @Test
+    public void orderedTest() throws Exception{
+        System.out.println("========================Ordered Array========================");
+        int[] values = {10, 20, 40, 80, 160};
+        for(int n: values) {
+            System.out.println("========================================================================");
+            System.out.println("Test for n = " + n);
+            Integer[] inputArray = generateRandomArray(n);
+            Arrays.sort(inputArray);
+
+            int runs = 10000;
+
+            double time = benchmarkRunTime(runs, n, inputArray);
+
+            System.out.println("Time taken: " + time + " Runs: " + runs);
+        }
+    }
+
+    @Test
+    public void reverseOrderedTest() throws Exception{
+        System.out.println("========================Reverse Ordered Array========================");
+        int[] values = {10, 20, 40, 80, 160};
+        for(int n: values) {
+            System.out.println("========================================================================");
+            System.out.println("Test for n = " + n);
+            Integer[] inputArray = generateRandomArray(n);
+            Arrays.sort(inputArray, Collections.reverseOrder());
+
+            int runs = 10000;
+
+            double time = benchmarkRunTime(runs, n, inputArray);
+
+            System.out.println("Time taken: " + time + " Runs: " + runs);
+        }
+    }
+
+    @Test
+    public void partialOrderedTest() throws Exception{
+        System.out.println("========================Partial Ordered Array========================");
+        int[] values = {10, 20, 40, 80, 160};
+        for(int n: values) {
+            System.out.println("========================================================================");
+            System.out.println("Test for n = " + n);
+            Integer[] inputArray = generateRandomArray(n);
+            Arrays.sort(inputArray, 0, (2*n)/5);
+            int runs = 10000;
+
+            double time = benchmarkRunTime(runs, n, inputArray);
+
+            System.out.println("Time taken: " + time + " Runs: " + runs);
+        }
+    }
+
+    private Integer[] generateRandomArray(int n) {
+        Random random = new Random();
+        Integer[] randomIntegers = new Integer[n];
+        for(int i=0; i<n; i++){
+            randomIntegers[i] = random.nextInt(n);
+        }
+        return randomIntegers;
+    }
+
+    private double benchmarkRunTime(int runs, int n, Integer[] inputArray){
+        Integer[] temp = Arrays.copyOf(inputArray, n);
+
+        long time = 0;
+        InsertionSort insertionSort = new InsertionSort();
+        for(int i=0; i<runs; i++){
+
+            long startTime = System.nanoTime();
+            insertionSort.sort(temp, 0, n);
+            long endTime = System.nanoTime();
+
+            time += (endTime - startTime);
+
+            temp = Arrays.copyOf(inputArray, n);
+        }
+        return time/runs;
     }
 
     final static LazyLogger logger = new LazyLogger(InsertionSort.class);
